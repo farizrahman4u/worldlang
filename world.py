@@ -41,15 +41,15 @@ class World(object):
     def add_object(self, obj):
         if obj in self.objs:
             err = 'Unable to create object {}.'.format(obj)
-            err += ' Antother object with the same obj already exists.'
+            err += ' Antother object with the same name already exists.'
             raise ValueError(err)
         elif obj in self.types:
             err = 'Unable to create object {}.'.format(obj)
-            err += ' A type with the same obj already exists.'
+            err += ' A type with the same name already exists.'
             raise ValueError(err)
         elif obj in self.rels:
             err = 'Unable to create object {}.'.format(obj)
-            err += ' A relation with the same obj already exists.'
+            err += ' A relation with the same name already exists.'
             raise ValueError(err)
         self.objs.add(obj)
         self.obj_2_types[obj] = set()
@@ -78,15 +78,15 @@ class World(object):
     def add_type(self, typ):
         if typ in self.types:
             err = 'Unable to create type {}.'.format(typ)
-            err += ' Antother type with the same obj already exists.'
+            err += ' Antother type with the same name already exists.'
             raise ValueError(err)        
         elif typ in self.objs:
             err = 'Unable to create type {}.'.format(typ)
-            err += ' An object with the same obj already exists.'
+            err += ' An object with the same name already exists.'
             raise ValueError(err) 
         elif typ in self.rels:
             err = 'Unable to create type {}.'.format(typ)
-            err += ' A relation with the same obj already exists.'
+            err += ' A relation with the same name already exists.'
             raise ValueError(err)
         self.types.add(typ)
         self.type_2_objs[typ] = set()
@@ -166,15 +166,15 @@ class World(object):
     def add_relation(self, rel):
         if rel in self.rels:
             err = 'Unable to create relation {}.'.format(rel)
-            err += ' Antother relation with the same obj already exists.'
+            err += ' Antother relation with the same name already exists.'
             raise ValueError(err)
         elif rel in self.objs:
             err = 'Unable to create relation {}.'.format(rel)
-            err += ' An object with the same obj already exists.'
+            err += ' An object with the same name already exists.'
             raise ValueError(err)
         elif rel in self.types:
             err = 'Unable to create relation {}.'.format(rel)
-            err += ' A type with the same obj already exists.'
+            err += ' A type with the same name already exists.'
             raise ValueError(err)
         self.rels.add(rel)
         self.rel_2_objs[rel] = set()
@@ -242,6 +242,39 @@ class World(object):
         for k in keys:
             if k[1] == rel:
                 del self.obj_rel_2_objs[k]
+
+    def get_code(self):
+        code = []
+        code.append('# Objects')
+        for obj in self.objs:
+            if obj[0] != '$':
+                code.append('obj ' + obj)
+        code.append('\n# Types')
+        for typ in self.types:
+            code.append('type ' + typ)
+        code.append('\n# Relations')
+        for rel in self.rels:
+            code.append('rel ' + rel)
+        code.append('\n# Object types')
+        for obj, types in self.obj_2_types.items():
+            if len(types) > 1:
+                suff = '+'
+            else:
+                suff = ''
+            for typ in types:
+                code.append(' '.join([typ + suff, obj]))
+        code.append('\n# Object graph')
+        for (obj1, rel), objs in self.obj_rel_2_objs.items():
+            if len(objs) > 1:
+                rel = rel + '+'
+            for obj2 in objs:
+                code.append(' '.join([rel, obj1, obj2]))
+        code.append('\n# Type graph')
+        for sup, subs in self.sub_types.items():
+            for sub in subs:
+                code.append(' '.join([sup, sub]))
+        return '\n'.join(code)
+
 
     def serialize(self):
         config = {}
@@ -357,11 +390,20 @@ class World(object):
 
     def save(self, path):
         with open(path, 'w') as f:
-            f.write(str(self.serialize()))
+            f.write(str(self.get_code()))
 
     @classmethod
     def load(cls, path):
-        import ast
+        world = cls()
         with open(path, 'r') as f:
-            config = ast.literal_eval(f.read())
-        return cls.deserialize(config)
+            for line in f:
+                line = line.strip()
+                while '  ' in line:
+                    line = line.replace('  ', ' ')
+                args = line.split(' ')
+                if args and args[0] and args[0][0] != '#':
+                    world.run(*args)
+        return world
+
+def reset(self):
+    self.__init__()
