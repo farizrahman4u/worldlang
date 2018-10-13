@@ -50,6 +50,23 @@ def repl():
             except Exception as ex:
                 print(ex)
             print('World loaded from ' + path)
+        elif arg0 == 'graph':
+            if len(args) > 1:
+                arg1 = args[1].lower()
+                assert arg1 in ['objects', 'types']
+            else:
+                arg1 = 'objects'
+            if arg1 == 'objects':
+                from dot import object_graph
+                dot = object_graph(world)
+            else:
+                from dot import type_graph
+                dot = type_graph(world)
+            dot.format = 'png'
+            tmp = 'temp.png'
+            if os.path.isfile(tmp):
+                os.remove(tmp)
+            dot.render(tmp, view=True)
         else:    
             try:
                 world.run(*args)

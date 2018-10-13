@@ -53,6 +53,8 @@ class World(object):
             raise ValueError(err)
         self.objs.add(obj)
         self.obj_2_types[obj] = set()
+        if obj[0] == '$':
+            self.type_object(obj, obj[1:])
 
 
     def delete_object(self, obj):
@@ -68,7 +70,7 @@ class World(object):
         for rel, objs in self.rel_2_objs.items():
             if obj in objs:
                 objs.remove(obj)
-        keys = self.obj_rel_2_objs.keys()
+        keys = list(self.obj_rel_2_objs.keys())
         for k in keys:
             if k[0] == obj:
                 del self.obj_rel_2_objs[k]
@@ -236,7 +238,7 @@ class World(object):
             raise ValueError(err)
         self.rels.remove(rel)
         del self.rel_2_objs[rel]
-        keys = self.obj_rel_2_objs.keys()
+        keys = list(self.obj_rel_2_objs.keys())
         for k in keys:
             if k[1] == rel:
                 del self.obj_rel_2_objs[k]
