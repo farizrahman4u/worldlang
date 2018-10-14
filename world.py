@@ -363,9 +363,9 @@ class World(object):
             assert len(args) == 2
             arg1 = args[1]
             if arg1 in self.types:
-                self.type_type(arg1, arg0, True)
+                self.type_type(arg1, arg0[:-1], True)
             elif arg1 in self.objs:
-                self.type_object(arg1, arg0,True)
+                self.type_object(arg1, arg0[:-1],True)
         elif arg0 in self.rels:
             assert len(args) == 3
             self.relate_objects(arg0, args[1], args[2])
