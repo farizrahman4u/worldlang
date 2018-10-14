@@ -380,7 +380,7 @@ class World(object):
             else:
                 raise ValueError('Too many arguments.')
         elif arg0 in self.objs:
-            assert len(args) == 3
+            assert len(args) == 3, 'Expected 3 arguments, got {}.'.format(len(args))
             arg1 = args[1]
             if arg1 not in self.rels:
                 raise ValueError('Unknown relation: {}.'.format(arg1))
