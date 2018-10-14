@@ -36,7 +36,11 @@ def repl():
             ext = '.world'
             if path[-len(ext):].lower() != ext:
                 path += ext
-            world.save(path)
+            try:
+                world.save(path)
+            except Exception as e:
+                print(e)
+                continue
             print('World saved to ' + path)
         elif arg0 == 'load':
             path = input('Enter file name:')
@@ -50,6 +54,7 @@ def repl():
                 world = World.load(path)
             except Exception as e:
                 print(str(e))
+                continue
             print('World loaded from ' + path)
         elif arg0 == 'graph':
             if len(args) > 1:
