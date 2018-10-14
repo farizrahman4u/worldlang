@@ -45,9 +45,11 @@ def repl():
                 path += ext
             if not os.path.isfile(path):
                 print('File not found: ' + path)
-
-            world = World.load(path)
-
+                continue
+            try:
+                world = World.load(path)
+            except Exception as e:
+                print(str(e))
             print('World loaded from ' + path)
         elif arg0 == 'graph':
             if len(args) > 1:
