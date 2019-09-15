@@ -26,7 +26,13 @@ def repl():
         while '  ' in code:
             code = code.replace('  ', ' ')
         args = code.split(' ')
+        if not args:
+            continue
         arg0 = args[0].lower()
+        if not arg0:
+            continue
+        if arg0[0] == '#':
+            continue
         if arg0 == 'exit':
             break
         elif arg0 == 'reset':
